@@ -6,6 +6,7 @@
 package view;
 
 import dao.DAO;
+
 import dao.UserDAO;
 
 import javax.swing.JOptionPane;
@@ -19,12 +20,17 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.JTable;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  *
@@ -49,6 +55,29 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         tableModel.addColumn("NickName");
         
         table = new JTable(tableModel);
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // Get the selected row index
+                int selectedRow = table.getSelectedRow();
+
+                // Display a confirmation dialog
+                int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this record?",
+                        "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+
+                // If the user confirms the deletion, proceed with deleting the row
+                if (option == JOptionPane.YES_OPTION) {
+                    // Get the ID of the selected record
+                    String selectedId = table.getValueAt(selectedRow, 0).toString();
+
+                    // Delete the record from the database
+                    deleteRecord(selectedId);
+
+                    // Remove the selected row from the table
+                    tableModel.removeRow(selectedRow);
+                }
+            }
+        });
         jScrollPane1.setViewportView(table);
 
         
@@ -111,6 +140,23 @@ public class Admin extends javax.swing.JFrame implements Runnable{
 
         jComboBox1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chọn lý do", "Ngôn ngữ thô tục - xúc phạm người khác", "Spam đăng nhập", "Sử dụng game với mục đích xấu", "Phát hiện rò rỉ bảo mật - tài khoản tạm thời bị khoá để kiểm tra thêm" }));
+        
+        JButton btnNewButton = new JButton("Tìm kiếm");
+        btnNewButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		String tk=jTextField3.getText();
+        		searchById(tk);
+        	}
+        });
+        btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        
+        JButton btnNewButton_1 = new JButton("Reset");
+        btnNewButton_1.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		fetchDataFromMySQL();
+        	}
+        });
+        btnNewButton_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         layout.setHorizontalGroup(
@@ -120,13 +166,22 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         			.addGap(60)
         			.addGroup(layout.createParallelGroup(Alignment.LEADING)
         				.addGroup(layout.createSequentialGroup()
-        					.addComponent(jTextField3, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE)
-        					.addGap(44)
+        					.addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 582, GroupLayout.PREFERRED_SIZE)
+        					.addContainerGap(32, Short.MAX_VALUE))
+        				.addGroup(Alignment.TRAILING, layout.createSequentialGroup()
+        					.addGap(18)
+        					.addComponent(jTextField3, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
+        					.addPreferredGap(ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
         					.addComponent(jComboBox1, GroupLayout.PREFERRED_SIZE, 230, GroupLayout.PREFERRED_SIZE)
-        					.addGap(55)
-        					.addComponent(jButton4, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
-        				.addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 582, GroupLayout.PREFERRED_SIZE))
-        			.addContainerGap(32, Short.MAX_VALUE))
+        					.addGap(43)
+        					.addComponent(jButton4, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE)
+        					.addGap(62))))
+        		.addGroup(layout.createSequentialGroup()
+        			.addGap(137)
+        			.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 103, GroupLayout.PREFERRED_SIZE)
+        			.addGap(50)
+        			.addComponent(btnNewButton_1, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)
+        			.addContainerGap(293, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
         	layout.createParallelGroup(Alignment.LEADING)
@@ -137,9 +192,13 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         			.addGap(40)
         			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
         				.addComponent(jButton4)
-        				.addComponent(jTextField3, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
-        				.addComponent(jComboBox1, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
-        			.addContainerGap(234, Short.MAX_VALUE))
+        				.addComponent(jComboBox1, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(jTextField3, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE))
+        			.addGap(36)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(btnNewButton_1, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE))
+        			.addContainerGap(165, Short.MAX_VALUE))
         );
         
         getContentPane().setLayout(layout);
@@ -167,7 +226,40 @@ public class Admin extends javax.swing.JFrame implements Runnable{
             e.printStackTrace();
         }
     }
-   
+    private void searchById(String searchId) {
+        try {
+            Connection conn = DAO.getJDBCConnection();
+            String query = "SELECT ID,username,password,nickname FROM user WHERE ID = ?";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, searchId);
+            ResultSet resultSet = ps.executeQuery();
+            tableModel.setRowCount(0);
+            while (resultSet.next()) {
+                String id = resultSet.getString("ID");
+                String email = resultSet.getString("username");
+                String tdn = resultSet.getString("password");
+                String tnd = resultSet.getString("nickname");
+                
+                tableModel.addRow(new Object[]{id, email, tdn, tnd});
+            }
+            
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    private void deleteRecord(String id) {
+	    try {
+	        Connection conn = DAO.getJDBCConnection();
+	        String query = "DELETE FROM user where ID=?";
+	        PreparedStatement ps = conn.prepareStatement(query);
+	        ps.setString(1, id);
+	        ps.executeUpdate();
+	        conn.close();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         try {
             if(jTextField3.getText().length()==0){

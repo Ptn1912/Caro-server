@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import model.User;
@@ -136,18 +137,36 @@ public class UserDAO extends DAO{
         return false;
     }
     
-    public void updateBannedStatus(User user,boolean ban){
+    public void updateBannedStatus(User user, boolean ban) {
         try {
-            PreparedStatement preparedStatement1 = DAO.getJDBCConnection().prepareStatement("INSERT INTO `banned_user`(`ID_User`) VALUES (?)");
-            PreparedStatement preparedStatement2 = DAO.getJDBCConnection().prepareStatement("DELETE FROM `user` WHERE ID=?");
-            if(ban){
-               
-                preparedStatement2.executeUpdate();
+            PreparedStatement preparedStatement1 = DAO.getJDBCConnection().prepareStatement("SELECT * FROM `banned_user` WHERE `ID_User` = ?");
+            preparedStatement1.setInt(1, user.getID());
+            ResultSet resultSet = preparedStatement1.executeQuery();
+
+            if (resultSet.next()) {
+                // User đã bị cấm trước đó, không cần chèn lại
+                JOptionPane.showMessageDialog(null, "User đã bị cấm trước đó");
+            } else {
+                if (ban) {
+                    PreparedStatement preparedStatement2 = DAO.getJDBCConnection().prepareStatement("INSERT INTO `banned_user`(`ID_User`) VALUES (?)");
+                    preparedStatement2.setInt(1, user.getID());
+                    preparedStatement2.executeUpdate();
+                    preparedStatement2.close();
+                } else {
+                    PreparedStatement preparedStatement3 = DAO.getJDBCConnection().prepareStatement("DELETE FROM `user` WHERE `ID` = ?");
+                    preparedStatement3.setInt(1, user.getID());
+                    preparedStatement3.executeUpdate();
+                    preparedStatement3.close();
+                }
             }
+
+            preparedStatement1.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
+
+
     
     public void updateToOnline(int ID) {
         try {
