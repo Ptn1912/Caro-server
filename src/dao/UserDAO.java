@@ -32,9 +32,9 @@ public class UserDAO extends DAO{
     public User verifyUser(User user) {
         try {
             PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT *\n"
-                    + "FROM user\n"
-                    + "WHERE username = ?\n"
-                    + "AND password = ?");
+                    + "FROM ta_lpn_user\n"
+                    + "WHERE T_UserName = ?\n"
+                    + "AND T_Pass = ?");
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getPassword());
             System.out.println(preparedStatement);
@@ -62,8 +62,8 @@ public class UserDAO extends DAO{
 
     public User getUserByID(int ID) {
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT * FROM user\n"
-                    + "WHERE ID=?");
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT * FROM ta_lpn_user\n"
+                    + "WHERE I_ID=?");
             preparedStatement.setInt(1, ID);
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -90,7 +90,7 @@ public class UserDAO extends DAO{
     }
     public void addUser(User user) {
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("INSERT INTO user(username, password, nickname)\n"
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("INSERT INTO ta_lpn_user(T_UserName,T_Pass,T_NickName)\n"
                     + "VALUES(?,?,?)");
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getPassword());
@@ -105,7 +105,7 @@ public class UserDAO extends DAO{
     
     public boolean checkDuplicated(String username){
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT * FROM user WHERE username = ?");
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT * FROM ta_lpn_user WHERE T_UserName = ?");
             preparedStatement.setString(1, username);
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -122,7 +122,7 @@ public class UserDAO extends DAO{
     
     public boolean checkIsBanned(User user){
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT * FROM banned_user WHERE ID_User = ?");
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT * FROM ta_lpn_banned_user WHERE I_ID_User = ?");
             preparedStatement.setInt(1, user.getID());
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -139,7 +139,7 @@ public class UserDAO extends DAO{
     
     public void updateBannedStatus(User user, boolean ban) {
         try {
-            PreparedStatement preparedStatement1 = DAO.getJDBCConnection().prepareStatement("SELECT * FROM `banned_user` WHERE `ID_User` = ?");
+            PreparedStatement preparedStatement1 = DAO.getJDBCConnection().prepareStatement("SELECT * FROM `ta_lpn_banned_user` WHERE `I_ID_User` = ?");
             preparedStatement1.setInt(1, user.getID());
             ResultSet resultSet = preparedStatement1.executeQuery();
 
@@ -148,12 +148,12 @@ public class UserDAO extends DAO{
                 JOptionPane.showMessageDialog(null, "User đã bị cấm trước đó");
             } else {
                 if (ban) {
-                    PreparedStatement preparedStatement2 = DAO.getJDBCConnection().prepareStatement("INSERT INTO `banned_user`(`ID_User`) VALUES (?)");
+                    PreparedStatement preparedStatement2 = DAO.getJDBCConnection().prepareStatement("INSERT INTO `ta_lpn_banned_user`(`I_ID_User`) VALUES (?)");
                     preparedStatement2.setInt(1, user.getID());
                     preparedStatement2.executeUpdate();
                     preparedStatement2.close();
                 } else {
-                    PreparedStatement preparedStatement3 = DAO.getJDBCConnection().prepareStatement("DELETE FROM `user` WHERE `ID` = ?");
+                    PreparedStatement preparedStatement3 = DAO.getJDBCConnection().prepareStatement("DELETE FROM `ta_lpn_user` WHERE `I_ID` = ?");
                     preparedStatement3.setInt(1, user.getID());
                     preparedStatement3.executeUpdate();
                     preparedStatement3.close();
@@ -170,9 +170,9 @@ public class UserDAO extends DAO{
     
     public void updateToOnline(int ID) {
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE user\n"
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE ta_lpn_user\n"
                     + "SET IsOnline = 1\n"
-                    + "WHERE ID = ?");
+                    + "WHERE I_ID = ?");
             preparedStatement.setInt(1, ID);
             System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
@@ -183,9 +183,9 @@ public class UserDAO extends DAO{
     
     public void updateToOffline(int ID) {
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE user\n"
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE ta_lpn_user\n"
                     + "SET IsOnline = 0\n"
-                    + "WHERE ID = ?");
+                    + "WHERE I_ID = ?");
             preparedStatement.setInt(1, ID);
             System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
@@ -209,9 +209,9 @@ public class UserDAO extends DAO{
     
     public void updateToNotPlaying(int ID){
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE user\n"
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE ta_lpn_user\n"
                     + "SET IsPlaying = 0\n"
-                    + "WHERE ID = ?");
+                    + "WHERE I_ID = ?");
             preparedStatement.setInt(1, ID);
             System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
@@ -223,17 +223,17 @@ public class UserDAO extends DAO{
     public List<User> getListFriend(int ID) {
         List<User> ListFriend = new ArrayList<>();
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT User.ID, User.NickName, User.IsOnline, User.IsPlaying\n"
-                    + "FROM user\n"
-                    + "WHERE User.ID IN (\n"
-                    + "	SELECT ID_User1\n"
-                    + "    FROM friend\n"
-                    + "    WHERE ID_User2 = ?\n"
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT I_ID, User.T_NickName, IsOnline, IsPlaying\n"
+                    + "FROM ta_lpn_user\n"
+                    + "WHERE I_ID IN (\n"
+                    + "	SELECT I_ID_User1\n"
+                    + "    FROM ta_lpn_friend\n"
+                    + "    WHERE I_ID_User2 = ?\n"
                     + ")\n"
-                    + "OR User.ID IN(\n"
-                    + "	SELECT ID_User2\n"
-                    + "    FROM friend\n"
-                    + "    WHERE ID_User1 = ?\n"
+                    + "OR I_ID IN(\n"
+                    + "	SELECT I_ID_User2\n"
+                    + "    FROM ta_lpn_friend\n"
+                    + "    WHERE I_ID_User1 = ?\n"
                     + ")");
             preparedStatement.setInt(1, ID);
             preparedStatement.setInt(2, ID);
@@ -273,9 +273,9 @@ public class UserDAO extends DAO{
     public int getRank(int ID) {
         int rank = 1;
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT user.ID\n"
-                    + "FROM user\n"
-                    + "ORDER BY (user.NumberOfGame+user.numberOfDraw*5+user.NumberOfWin*10) DESC");
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT I_ID\n"
+                    + "FROM ta_lpn_user\n"
+                    + "ORDER BY (NumberOfGame+numberOfDraw*5+NumberOfWin*10) DESC");
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 if(rs.getInt(1)==ID)
@@ -293,8 +293,8 @@ public class UserDAO extends DAO{
         List<User> list = new ArrayList<>();
         try {
             PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT *\n"
-                    + "FROM user\n"
-                    + "ORDER BY(user.NumberOfGame+user.numberOfDraw*5+user.NumberOfWin*10) DESC\n"
+                    + "FROM ta_lpn_user\n"
+                    + "ORDER BY(NumberOfGame+numberOfDraw*5+NumberOfWin*10) DESC\n"
                     + "LIMIT 8");
             System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -323,9 +323,9 @@ public class UserDAO extends DAO{
 
     public int getNumberOfWin(int ID) {
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT user.NumberOfWin\n"
-                    + "FROM user\n"
-                    + "WHERE user.ID = ?");
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT NumberOfWin\n"
+                    + "FROM ta_lpn_user\n"
+                    + "WHERE I_ID = ?");
             preparedStatement.setInt(1, ID);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
@@ -339,9 +339,9 @@ public class UserDAO extends DAO{
     }
     public int getNumberOfDraw(int ID) {
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT user.NumberOfDraw\n"
-                    + "FROM user\n"
-                    + "WHERE user.ID = ?");
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT NumberOfDraw\n"
+                    + "FROM ta_lpn_user\n"
+                    + "WHERE I_ID = ?");
             preparedStatement.setInt(1, ID);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
@@ -356,9 +356,9 @@ public class UserDAO extends DAO{
     
     public void addDrawGame(int ID){
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE user\n"
-                    + "SET user.NumberOfDraw = ?\n"
-                    + "WHERE user.ID = ?");
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE ta_lpn_user\n"
+                    + "SET NumberOfDraw = ?\n"
+                    + "WHERE I_ID = ?");
             preparedStatement.setInt(1, new UserDAO().getNumberOfDraw(ID)+1);
             preparedStatement.setInt(2, ID);
             System.out.println(preparedStatement);
@@ -370,9 +370,9 @@ public class UserDAO extends DAO{
     
     public void addWinGame(int ID){
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE user\n"
-                    + "SET user.NumberOfWin = ?\n"
-                    + "WHERE user.ID = ?");
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE ta_lpn_user\n"
+                    + "SET NumberOfWin = ?\n"
+                    + "WHERE I_ID = ?");
             preparedStatement.setInt(1, new UserDAO().getNumberOfWin(ID)+1);
             preparedStatement.setInt(2, ID);
             System.out.println(preparedStatement);
@@ -384,9 +384,9 @@ public class UserDAO extends DAO{
     
     public int getNumberOfGame(int ID) {
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT user.NumberOfGame\n"
-                    + "FROM user\n"
-                    + "WHERE user.ID = ?");
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT NumberOfGame\n"
+                    + "FROM ta_lpn_user\n"
+                    + "WHERE I_ID = ?");
             preparedStatement.setInt(1, ID);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
@@ -401,9 +401,9 @@ public class UserDAO extends DAO{
 
     public void addGame(int ID) {
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE user\n"
-                    + "SET user.NumberOfGame = ?\n"
-                    + "WHERE user.ID = ?");
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE ta_lpn_user\n"
+                    + "SET NumberOfGame = ?\n"
+                    + "WHERE I_ID = ?");
             preparedStatement.setInt(1, new UserDAO().getNumberOfGame(ID) + 1);
             preparedStatement.setInt(2, ID);
             System.out.println(preparedStatement);
@@ -414,9 +414,9 @@ public class UserDAO extends DAO{
     }
     public void decreaseGame(int ID){
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE user\n"
-                    + "SET user.NumberOfGame = ?\n"
-                    + "WHERE user.ID = ?");
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE ta_lpn_user\n"
+                    + "SET NumberOfGame = ?\n"
+                    + "WHERE I_ID = ?");
             preparedStatement.setInt(1, new UserDAO().getNumberOfGame(ID) - 1);
             preparedStatement.setInt(2, ID);
             System.out.println(preparedStatement);
@@ -428,9 +428,9 @@ public class UserDAO extends DAO{
 
     public String getNickNameByID(int ID) {
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT user.NickName\n"
-                    + "FROM user\n"
-                    + "WHERE user.ID=?");
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT T_NickName\n"
+                    + "FROM ta_lpn_user\n"
+                    + "WHERE I_ID=?");
             preparedStatement.setInt(1, ID);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {

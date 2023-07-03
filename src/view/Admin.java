@@ -31,6 +31,8 @@ import javax.swing.JTable;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Color;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -42,6 +44,7 @@ public class Admin extends javax.swing.JFrame implements Runnable{
      * Creates new form Admin
      */
     public Admin() {
+    	
         initComponents();
         this.setResizable(false);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -103,6 +106,7 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         jTextField3.setFont(new Font("Tahoma", Font.PLAIN, 11));
         jTextField3.setText("Nhập ID");
         jButton4 = new javax.swing.JButton();
+        jButton4.setIcon(new ImageIcon("C:\\Users\\Msi\\eclipse-workspace\\caro_game_client\\assets\\image\\9004743_trash_delete_bin_remove_icon.png"));
         jComboBox1 = new javax.swing.JComboBox<>();
 
         jTextField2.setText("jTextField2");
@@ -142,15 +146,21 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chọn lý do", "Ngôn ngữ thô tục - xúc phạm người khác", "Spam đăng nhập", "Sử dụng game với mục đích xấu", "Phát hiện rò rỉ bảo mật - tài khoản tạm thời bị khoá để kiểm tra thêm" }));
         
         JButton btnNewButton = new JButton("Tìm kiếm");
+        btnNewButton.setBackground(new Color(44, 115, 233));
+        btnNewButton.setForeground(new Color(255, 255, 255));
+        btnNewButton.setIcon(new ImageIcon("C:\\Users\\Msi\\eclipse-workspace\\caro_game_client\\assets\\image\\9004811_search_find_magnifier_zoom_icon.png"));
         btnNewButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		String tk=jTextField3.getText();
         		searchById(tk);
         	}
         });
-        btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 13));
         
         JButton btnNewButton_1 = new JButton("Reset");
+        btnNewButton_1.setBackground(new Color(255, 0, 0));
+        btnNewButton_1.setForeground(new Color(255, 255, 255));
+        btnNewButton_1.setIcon(new ImageIcon("C:\\Users\\Msi\\eclipse-workspace\\caro_game_client\\assets\\image\\59198_refresh_reload_repeat_reset_icon.png"));
         btnNewButton_1.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		fetchDataFromMySQL();
@@ -163,25 +173,23 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         	layout.createParallelGroup(Alignment.LEADING)
         		.addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
         		.addGroup(layout.createSequentialGroup()
-        			.addGap(60)
-        			.addGroup(layout.createParallelGroup(Alignment.LEADING)
-        				.addGroup(layout.createSequentialGroup()
-        					.addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 582, GroupLayout.PREFERRED_SIZE)
-        					.addContainerGap(32, Short.MAX_VALUE))
-        				.addGroup(Alignment.TRAILING, layout.createSequentialGroup()
-        					.addGap(18)
-        					.addComponent(jTextField3, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
-        					.addPreferredGap(ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
-        					.addComponent(jComboBox1, GroupLayout.PREFERRED_SIZE, 230, GroupLayout.PREFERRED_SIZE)
-        					.addGap(43)
-        					.addComponent(jButton4, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE)
-        					.addGap(62))))
+        			.addContainerGap()
+        			.addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 658, Short.MAX_VALUE)
+        			.addContainerGap())
         		.addGroup(layout.createSequentialGroup()
-        			.addGap(137)
-        			.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 103, GroupLayout.PREFERRED_SIZE)
-        			.addGap(50)
-        			.addComponent(btnNewButton_1, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)
-        			.addContainerGap(293, Short.MAX_VALUE))
+        			.addGap(61)
+        			.addComponent(jTextField3, GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE)
+        			.addGap(18)
+        			.addComponent(jComboBox1, GroupLayout.PREFERRED_SIZE, 230, GroupLayout.PREFERRED_SIZE)
+        			.addPreferredGap(ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+        			.addComponent(jButton4, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
+        			.addGap(131))
+        		.addGroup(layout.createSequentialGroup()
+        			.addGap(140)
+        			.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 137, GroupLayout.PREFERRED_SIZE)
+        			.addGap(72)
+        			.addComponent(btnNewButton_1, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
+        			.addContainerGap())
         );
         layout.setVerticalGroup(
         	layout.createParallelGroup(Alignment.LEADING)
@@ -191,14 +199,14 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         			.addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 170, GroupLayout.PREFERRED_SIZE)
         			.addGap(40)
         			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-        				.addComponent(jButton4)
+        				.addComponent(jTextField3, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
         				.addComponent(jComboBox1, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-        				.addComponent(jTextField3, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE))
-        			.addGap(36)
-        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-        				.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-        				.addComponent(btnNewButton_1, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE))
-        			.addContainerGap(165, Short.MAX_VALUE))
+        				.addComponent(jButton4))
+        			.addGap(51)
+        			.addGroup(layout.createParallelGroup(Alignment.TRAILING, false)
+        				.addComponent(btnNewButton_1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        				.addComponent(btnNewButton, GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE))
+        			.addContainerGap(150, Short.MAX_VALUE))
         );
         
         getContentPane().setLayout(layout);
@@ -209,15 +217,15 @@ public class Admin extends javax.swing.JFrame implements Runnable{
     private void fetchDataFromMySQL() {
         try {
         	Connection conn = DAO.getJDBCConnection();
-            String query = "SELECT ID,username,password,nickname FROM user";
+            String query = "SELECT I_ID,T_UserName,T_Pass,T_NickName FROM ta_lpn_user";
             PreparedStatement ps = conn.prepareStatement(query);
             ResultSet resultSet = ps.executeQuery(query);
             tableModel.setRowCount(0);
             while (resultSet.next()) {
-            	String id=resultSet.getString("ID");
-                String email = resultSet.getString("username");
-                String tdn = resultSet.getString("password");
-                String tnd = resultSet.getString("nickname");
+            	String id=resultSet.getString("I_ID");
+                String email = resultSet.getString("T_UserName");
+                String tdn = resultSet.getString("T_Pass");
+                String tnd = resultSet.getString("T_NickName");
                
                 tableModel.addRow(new Object[]{id,email, tdn, tnd});
             }
@@ -229,16 +237,16 @@ public class Admin extends javax.swing.JFrame implements Runnable{
     private void searchById(String searchId) {
         try {
             Connection conn = DAO.getJDBCConnection();
-            String query = "SELECT ID,username,password,nickname FROM user WHERE ID = ?";
+            String query = "SELECT I_ID,T_UserName,T_Pass,T_NickName FROM ta_lpn_user WHERE I_ID = ?";
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, searchId);
             ResultSet resultSet = ps.executeQuery();
             tableModel.setRowCount(0);
             while (resultSet.next()) {
-                String id = resultSet.getString("ID");
-                String email = resultSet.getString("username");
-                String tdn = resultSet.getString("password");
-                String tnd = resultSet.getString("nickname");
+            	String id=resultSet.getString("I_ID");
+                String email = resultSet.getString("T_UserName");
+                String tdn = resultSet.getString("T_Pass");
+                String tnd = resultSet.getString("T_NickName");
                 
                 tableModel.addRow(new Object[]{id, email, tdn, tnd});
             }
@@ -251,7 +259,7 @@ public class Admin extends javax.swing.JFrame implements Runnable{
     private void deleteRecord(String id) {
 	    try {
 	        Connection conn = DAO.getJDBCConnection();
-	        String query = "DELETE FROM user where ID=?";
+	        String query = "DELETE FROM ta_lpn_user where I_ID=?";
 	        PreparedStatement ps = conn.prepareStatement(query);
 	        ps.setString(1, id);
 	        ps.executeUpdate();

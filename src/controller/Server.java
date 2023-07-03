@@ -33,7 +33,7 @@ public class Server {
         ID_room = 100;
         
         try {
-            listener = new ServerSocket(7786);
+            listener = new ServerSocket(7783);
         } catch (IOException e) {
             System.out.println(e);
             System.exit(1);
