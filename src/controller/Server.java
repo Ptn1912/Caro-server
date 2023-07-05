@@ -14,6 +14,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.SwingUtilities;
+
 /**
  *
  * @author Admin
@@ -33,7 +35,7 @@ public class Server {
         ID_room = 100;
         
         try {
-            listener = new ServerSocket(7783);
+            listener = new ServerSocket(7784);
         } catch (IOException e) {
             System.out.println(e);
             System.exit(1);
@@ -45,8 +47,12 @@ public class Server {
                 TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(8) // queueCapacity
         );
-        admin = new Admin();
-        admin.run();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                admin = new Admin();
+                admin.run();
+            }
+        });
         try {
             while (true) {
                 // Chấp nhận một yêu cầu kết nối từ phía Client.
