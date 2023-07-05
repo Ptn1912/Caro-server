@@ -196,9 +196,9 @@ public class UserDAO extends DAO{
   
     public void updateToPlaying(int ID){
         try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE user\n"
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE ta_lpn_user\n"
                     + "SET IsPlaying = 1\n"
-                    + "WHERE ID = ?");
+                    + "WHERE I_ID = ?");
             preparedStatement.setInt(1, ID);
             System.out.println(preparedStatement);
             preparedStatement.executeUpdate();

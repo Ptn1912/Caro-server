@@ -30,12 +30,12 @@ public class Server {
     public static void main(String[] args) {
         ServerSocket listener = null;
         serverThreadBus = new ServerThreadBus();
-        System.out.println("Server is waiting to accept user...");
+        System.out.println("Server dang chay...");
         int clientNumber = 0;
         ID_room = 100;
         
         try {
-            listener = new ServerSocket(7784);
+            listener = new ServerSocket(7785);
         } catch (IOException e) {
             System.out.println(e);
             System.exit(1);
@@ -61,7 +61,7 @@ public class Server {
                 System.out.println(socketOfServer.getInetAddress().getHostAddress());
                 ServerThread serverThread = new ServerThread(socketOfServer, clientNumber++);
                 serverThreadBus.add(serverThread);
-                System.out.println("Số thread đang chạy là: "+serverThreadBus.getLength());
+                System.out.println("So thread dang chay la: "+serverThreadBus.getLength());
                 executor.execute(serverThread);  
             }
         } catch (IOException ex) {

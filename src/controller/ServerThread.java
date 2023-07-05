@@ -105,7 +105,7 @@ public class ServerThread implements Runnable {
             // Mở luồng vào ra trên Socket tại Server.
             is = new BufferedReader(new InputStreamReader(socketOfServer.getInputStream()));
             os = new BufferedWriter(new OutputStreamWriter(socketOfServer.getOutputStream()));
-            System.out.println("Khời động luông mới thành công, ID là: " + clientNumber);
+            System.out.println("Khoi dong luong moi thanh cong, ID la: " + clientNumber);
             write("server-send-id" + "," + this.clientNumber);
             String message;
             while (!isClosed) {
@@ -252,7 +252,7 @@ public class ServerThread implements Runnable {
                         if (serverThread.room != null && serverThread.room.getID() == ID_room) {
                             serverThread.room.setUser2(this);
                             this.room = serverThread.room;
-                            System.out.println("Đã vào phòng " + room.getID());
+                            System.out.println("Da vao phong " + room.getID());
                             room.increaseNumberOfGame();
                             goToPartnerRoom();
                             userDAO.updateToPlaying(this.user.getID());
@@ -338,7 +338,7 @@ public class ServerThread implements Runnable {
             
             //remove thread khỏi bus
             Server.serverThreadBus.remove(clientNumber);
-            System.out.println(this.clientNumber + " đã thoát");
+            System.out.println(this.clientNumber + " da thoat");
             if (room != null) {
                 try {
                     if (room.getCompetitor(clientNumber) != null) {
