@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller;
 
 import dao.UserDAO;
@@ -17,10 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.User;
 
-/**
- *
- * @author Admin
- */
 public class ServerThread implements Runnable {
     
     private User user;
@@ -152,7 +143,7 @@ public class ServerThread implements Runnable {
                     userDAO.updateToOffline(this.user.getID());
                     Server.admin.addMessage("["+user.getID()+"] "+user.getNickname()+" đã offline");
                     Server.serverThreadBus.boardCast(clientNumber, "chat-server,"+this.user.getNickname()+" đã offline");
-                    this.user=null;
+                   
                 }
                 //Xử lý xem danh sách bạn bè
                 if(messageSplit[0].equals("view-friend-list")){

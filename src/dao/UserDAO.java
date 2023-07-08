@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package dao;
 
 import java.sql.PreparedStatement;
@@ -19,10 +15,6 @@ import javax.swing.table.DefaultTableModel;
 
 import model.User;
 
-/**
- *
- * @author Admin
- */
 public class UserDAO extends DAO{
 
     public UserDAO() {
@@ -143,20 +135,36 @@ public class UserDAO extends DAO{
             preparedStatement1.setInt(1, user.getID());
             ResultSet resultSet = preparedStatement1.executeQuery();
 
-            if (resultSet.next()) {
+            if (resultSet.next() && ban) {
                 // User đã bị cấm trước đó, không cần chèn lại
                 JOptionPane.showMessageDialog(null, "User đã bị cấm trước đó");
             } else {
                 if (ban) {
-                    PreparedStatement preparedStatement2 = DAO.getJDBCConnection().prepareStatement("INSERT INTO `ta_lpn_banned_user`(`I_ID_User`) VALUES (?)");
-                    preparedStatement2.setInt(1, user.getID());
-                    preparedStatement2.executeUpdate();
-                    preparedStatement2.close();
+                	String insertQuery = "INSERT INTO `ta_lpn_banned_user` (`I_ID_User`) VALUES (?);";
+                	String updateQuery = "UPDATE `ta_lpn_user` SET `IsOnline` = '0' WHERE (`I_ID` = ?);";
+
+                	try (PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement(insertQuery);
+                	     PreparedStatement preparedStatement2 = DAO.getJDBCConnection().prepareStatement(updateQuery)) {
+
+                	    preparedStatement.setInt(1, user.getID());
+                	    preparedStatement.executeUpdate();
+                	    preparedStatement.close();
+
+                	    preparedStatement2.setInt(1, user.getID());
+                	    preparedStatement2.executeUpdate();
+                	    preparedStatement2.close();
+                	    
+                	} catch (SQLException e) {
+                	    // Xử lý ngoại lệ (exception) nếu cần thiết
+                	    e.printStackTrace();
+                	}
+
+               
                 } else {
-                    PreparedStatement preparedStatement3 = DAO.getJDBCConnection().prepareStatement("DELETE FROM `ta_lpn_user` WHERE `I_ID` = ?");
-                    preparedStatement3.setInt(1, user.getID());
-                    preparedStatement3.executeUpdate();
-                    preparedStatement3.close();
+                    PreparedStatement preparedStatement4 = DAO.getJDBCConnection().prepareStatement("DELETE FROM `ta_lpn_banned_user` WHERE `I_ID_User` = ?");
+                    preparedStatement4.setInt(1, user.getID());
+                    preparedStatement4.executeUpdate();
+                    preparedStatement4.close();
                 }
             }
 
@@ -194,6 +202,23 @@ public class UserDAO extends DAO{
         }
     }
   
+    public boolean checkIsOnline(int ID) {
+        try {
+            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT `IsOnline` FROM `ta_lpn_user` WHERE `I_ID` = ?");
+            preparedStatement.setInt(1, ID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            
+            if (resultSet.next()) {
+                int isOnline = resultSet.getInt("IsOnline");
+                return isOnline == 1;
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    
     public void updateToPlaying(int ID){
         try {
             PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE ta_lpn_user\n"

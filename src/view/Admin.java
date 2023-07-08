@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package view;
 
 import dao.DAO;
@@ -135,7 +131,7 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         btnNewButton.setBackground(new Color(49, 183, 66));
         btnNewButton.setBounds(342, 305, 158, 46);
         btnNewButton.setIcon(new ImageIcon(Admin.class.getResource("/view/9004811_search_find_magnifier_zoom_icon.png")));
-        btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 16));
         getContentPane().add(btnNewButton);
         
         JButton btnNewButton_1 = new JButton("Reset");
@@ -147,8 +143,8 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         });
         btnNewButton_1.setBackground(new Color(254, 62, 46));
         btnNewButton_1.setBounds(560, 305, 158, 46);
-        btnNewButton_1.setIcon(new ImageIcon(Admin.class.getResource("/view/8111405_reset_reload_refresh_sync_arrow_icon.png")));
-        btnNewButton_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        btnNewButton_1.setIcon(new ImageIcon(Admin.class.getResource("/view/2571204_refresh_reload_update_recycle_sync_icon.png")));
+        btnNewButton_1.setFont(new Font("Tahoma", Font.BOLD, 16));
         getContentPane().add(btnNewButton_1);
         
         comboBox = new JComboBox<String>();
@@ -159,28 +155,40 @@ public class Admin extends javax.swing.JFrame implements Runnable{
 
         
         JButton btnNewButton_2 = new JButton("Ban");
-        btnNewButton_2.setForeground(new Color(255, 64, 64));
+        btnNewButton_2.setForeground(new Color(255, 255, 255));
         btnNewButton_2.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent evt) {
         		jButton4ActionPerformed(evt);
         	}
         });
-        btnNewButton_2.setBackground(new Color(113, 255, 255));
+        btnNewButton_2.setBackground(new Color(255, 128, 128));
         btnNewButton_2.setBounds(436, 392, 166, 46);
-        btnNewButton_2.setIcon(new ImageIcon(Admin.class.getResource("/view/9004743_trash_delete_bin_remove_icon.png")));
-        btnNewButton_2.setFont(new Font("Tahoma", Font.PLAIN, 17));
+        btnNewButton_2.setIcon(new ImageIcon(Admin.class.getResource("/view/299051_ban_sign_icon (1).png")));
+        btnNewButton_2.setFont(new Font("Tahoma", Font.BOLD, 17));
         getContentPane().add(btnNewButton_2);
-     
         
-        JLabel lblNewLabel_1 = new JLabel("");
-        lblNewLabel_1.setIcon(new ImageIcon(Admin.class.getResource("/view/Tic-tac-toe1.jpg")));
-        lblNewLabel_1.setBounds(0, 239, 857, 323);
-        getContentPane().add(lblNewLabel_1);
+        JButton btnNewButton_3 = new JButton("Unban");
+        btnNewButton_3.setBackground(new Color(185, 255, 185));
+        btnNewButton_3.setForeground(new Color(255, 255, 255));
+        btnNewButton_3.setIcon(new ImageIcon(Admin.class.getResource("/view/9004846_tick_check_mark_accept_icon.png")));
+        btnNewButton_3.setFont(new Font("Tahoma", Font.BOLD, 17));
+        btnNewButton_3.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent evt) {
+        		jButton3ActionPerformed(evt);
+        	}
+        });
+        btnNewButton_3.setBounds(630, 392, 149, 46);
+        getContentPane.add(btnNewButton_3);
+        
+        JLabel lblNewLabel_2 = new JLabel("");
+        lblNewLabel_2.setIcon(new ImageIcon(Admin.class.getResource("/view/Tic-tac-toe1.jpg")));
+        lblNewLabel_2.setBounds(0, 242, 857, 313);
+        getContentPane.add(lblNewLabel_2);
 
         
        
     }
-    // </editor-fold>//GEN-END:initComponents
+   
     private void fetchDataFromMySQL() {
         try {
         	Connection conn = DAO.getJDBCConnection();
@@ -224,17 +232,27 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         }
     }
     private void deleteRecord(String id) {
-	    try {
-	        Connection conn = DAO.getJDBCConnection();
-	        String query = "DELETE FROM ta_lpn_user where I_ID=?";
-	        PreparedStatement ps = conn.prepareStatement(query);
-	        ps.setString(1, id);
-	        ps.executeUpdate();
-	        conn.close();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	}
+        try {
+            Connection conn = DAO.getJDBCConnection();
+            
+            // Xóa các hàng con trong bảng ta_lpn_banned_user liên kết với hàng cha trong bảng ta_lpn_user
+            String deleteChildQuery = "DELETE FROM ta_lpn_banned_user WHERE I_ID_User=?";
+            PreparedStatement deleteChildStatement = conn.prepareStatement(deleteChildQuery);
+            deleteChildStatement.setString(1, id);
+            deleteChildStatement.executeUpdate();
+            
+            // Xóa hàng cha trong bảng ta_lpn_user
+            String deleteParentQuery = "DELETE FROM ta_lpn_user WHERE I_ID=?";
+            PreparedStatement deleteParentStatement = conn.prepareStatement(deleteParentQuery);
+            deleteParentStatement.setString(1, id);
+            deleteParentStatement.executeUpdate();
+            
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         try {
             if(txtNhpId.getText().length()==0){
@@ -248,29 +266,48 @@ public class Admin extends javax.swing.JFrame implements Runnable{
             int userId = Integer.parseInt(txtNhpId.getText());
             User user = new User();
             user.setID(userId);
-            userDAO.updateBannedStatus(user, true);
-            ServerThread serverThread = Server.serverThreadBus.getServerThreadByUserID(userId);
-            serverThread.write("banned-notice,"+comboBox.getSelectedItem());
-            if(serverThread.getRoom()!=null){
-                Room room = serverThread.getRoom();
-                ServerThread competitorThread = room.getCompetitor(serverThread.getClientNumber());
-                room.setUsersToNotPlaying();
-                if(competitorThread!=null){
-                    room.decreaseNumberOfGame();
-                    competitorThread.write("left-room,");
-                    competitorThread.setRoom(null);
+            if(userDAO.checkIsOnline(userId)) {
+            	ServerThread serverThread = Server.serverThreadBus.getServerThreadByUserID(userId);
+                System.out.println(serverThread + " " + userId);
+                serverThread.write("banned-notice,"+comboBox.getSelectedItem());
+                if(serverThread.getRoom()!=null){
+                    Room room = serverThread.getRoom();
+                    ServerThread competitorThread = room.getCompetitor(serverThread.getClientNumber());
+                    room.setUsersToNotPlaying();
+                    if(competitorThread!=null){
+                        room.decreaseNumberOfGame();
+                        competitorThread.write("left-room,");
+                        competitorThread.setRoom(null);
+                    }
+                    serverThread.setRoom(null);
                 }
-                serverThread.setRoom(null);
+                Server.admin.addMessage("User có ID "+ userId+" đã bị BAN");
+                Server.serverThreadBus.boardCast(-1, "chat-server,"+"User có ID "+ userId+" đã bị BAN");
             }
-            Server.admin.addMessage("User có ID "+ userId+" đã bị BAN");
-            serverThread.setUser(null);
-            Server.serverThreadBus.boardCast(-1, "chat-server,"+"User có ID "+ userId+" đã bị BAN");
+            userDAO.updateBannedStatus(user, true);
             JOptionPane.showMessageDialog(rootPane, "Đã BAN user "+userId);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(rootPane, "User đã bị BAN");
+            e.printStackTrace();
         }
     }//GEN-LAST:event_jButton4ActionPerformed
    
+    public void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
+    	try {
+            if(txtNhpId.getText().length()==0){
+                JOptionPane.showMessageDialog(rootPane, "Vui lòng nhập ID của User");
+                return;
+            }
+            int userId = Integer.parseInt(txtNhpId.getText());
+            User user = new User();
+            user.setID(userId);
+            userDAO.updateBannedStatus(user, false); 
+            JOptionPane.showMessageDialog(rootPane, "Đã UNBAN user "+userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            
+        }
+    }
+    
     public void addMessage(String message) {
        
     }
@@ -286,7 +323,7 @@ public class Admin extends javax.swing.JFrame implements Runnable{
     
     private JTable table_1;
     private JTextField txtNhpId;
-    // End of variables declaration//GEN-END:variables
+   
 
     @Override
     public void run() {
