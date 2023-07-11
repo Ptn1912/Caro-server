@@ -51,7 +51,6 @@ public class UserDAO extends DAO{
         }
         return null;
     }
-
     public User getUserByID(int ID) {
         try {
             PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT * FROM ta_lpn_user\n"
@@ -173,9 +172,6 @@ public class UserDAO extends DAO{
             ex.printStackTrace();
         }
     }
-
-
-    
     public void updateToOnline(int ID) {
         try {
             PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE ta_lpn_user\n"
@@ -217,8 +213,6 @@ public class UserDAO extends DAO{
         }
         return false;
     }
-
-    
     public void updateToPlaying(int ID){
         try {
             PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("UPDATE ta_lpn_user\n"
@@ -244,57 +238,6 @@ public class UserDAO extends DAO{
             ex.printStackTrace();
         }
     }
-    
-    public List<User> getListFriend(int ID) {
-        List<User> ListFriend = new ArrayList<>();
-        try {
-            PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT I_ID, User.T_NickName, IsOnline, IsPlaying\n"
-                    + "FROM ta_lpn_user\n"
-                    + "WHERE I_ID IN (\n"
-                    + "	SELECT I_ID_User1\n"
-                    + "    FROM ta_lpn_friend\n"
-                    + "    WHERE I_ID_User2 = ?\n"
-                    + ")\n"
-                    + "OR I_ID IN(\n"
-                    + "	SELECT I_ID_User2\n"
-                    + "    FROM ta_lpn_friend\n"
-                    + "    WHERE I_ID_User1 = ?\n"
-                    + ")");
-            preparedStatement.setInt(1, ID);
-            preparedStatement.setInt(2, ID);
-            ResultSet rs = preparedStatement.executeQuery();
-            while (rs.next()) {
-                ListFriend.add(new User(rs.getInt(1),
-                        rs.getString(2),
-                        (rs.getInt(3)==1),
-                        (rs.getInt(4))==1));
-            }
-            ListFriend.sort(new Comparator<User>(){
-                @Override
-                public int compare(User o1, User o2) {
-                    if(o1.getIsOnline()&&!o2.getIsOnline())
-                        return -1;
-                    if(o1.getIsPlaying()&&!o2.getIsOnline())
-                        return -1;
-                    if(!o1.getIsPlaying()&&o1.getIsOnline()&&o2.getIsPlaying()&&o2.getIsOnline())
-                        return -1;
-                    return 0;
-                }
-                
-            });
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return ListFriend;
-    }
-
-   
-    
-  
-    
-   
-
     public int getRank(int ID) {
         int rank = 1;
         try {
@@ -343,9 +286,6 @@ public class UserDAO extends DAO{
         }
         return list;
     }
-
-   
-
     public int getNumberOfWin(int ID) {
         try {
             PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT NumberOfWin\n"

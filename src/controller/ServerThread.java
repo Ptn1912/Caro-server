@@ -133,8 +133,6 @@ public class ServerThread implements Runnable {
                        userDAO.addUser(userRegister);
                        User userRegistered = userDAO.verifyUser(userRegister);
                        this.user = userRegistered;
-                       userDAO.updateToOnline(this.user.getID());
-                       Server.serverThreadBus.boardCast(clientNumber, "chat-server,"+this.user.getNickname()+" đang online");
                        write("login-success,"+getStringFromUser(this.user));
                    }
                 }
@@ -143,22 +141,6 @@ public class ServerThread implements Runnable {
                     userDAO.updateToOffline(this.user.getID());
                     Server.admin.addMessage("["+user.getID()+"] "+user.getNickname()+" đã offline");
                     Server.serverThreadBus.boardCast(clientNumber, "chat-server,"+this.user.getNickname()+" đã offline");
-                   
-                }
-                //Xử lý xem danh sách bạn bè
-                if(messageSplit[0].equals("view-friend-list")){
-                    List<User> friends = userDAO.getListFriend(this.user.getID());
-                    String res = "return-friend-list,";
-                    for(User friend : friends){
-                        res += friend.getID() + "," + friend.getNickname()+"," + (friend.getIsOnline()==true?1:0) +"," + (friend.getIsPlaying()==true?1:0)+",";
-                    }
-                    System.out.println(res);
-                    write(res);
-                }
-                //Xử lý chat toàn server
-                if(messageSplit[0].equals("chat-server")){
-                    Server.serverThreadBus.boardCast(clientNumber,messageSplit[0]+","+ user.getNickname()+" : "+ messageSplit[1]);
-                    Server.admin.addMessage("["+user.getID()+"] "+user.getNickname()+" : "+ messageSplit[1]);
                 }
                 //Xử lý vào phòng trong chức năng tìm kiếm phòng
                 if(messageSplit[0].equals("go-to-room")){
@@ -226,10 +208,6 @@ public class ServerThread implements Runnable {
                     write(res);
                     System.out.println(res);
                 }
-                //Xử lý lấy thông tin kết bạn và rank
-               
-                //Xử lý tìm phòng nhanh
-               
                 //Xử lý không tìm được phòng
                 if (messageSplit[0].equals("cancel-room")) {
                     userDAO.updateToNotPlaying(this.user.getID());
@@ -251,28 +229,7 @@ public class ServerThread implements Runnable {
                         }
                     }
                 }
-                //Xử lý yêu cầu kết bạn
-                
-                //Xử lý khi gửi yêu cầu thách đấu tới bạn bè
-                if(messageSplit[0].equals("duel-request")){
-                    Server.serverThreadBus.sendMessageToUserID(Integer.parseInt(messageSplit[1]),
-                            "duel-notice,"+this.user.getID()+","+this.user.getNickname());
-                }
-                //Xử lý khi đối thủ đồng ý thách đấu
-                if(messageSplit[0].equals("agree-duel")){
-                    this.room = new Room(this);
-                    int ID_User2 = Integer.parseInt(messageSplit[1]);
-                    ServerThread user2 = Server.serverThreadBus.getServerThreadByUserID(ID_User2);
-                    room.setUser2(user2);
-                    user2.setRoom(room);
-                    room.increaseNumberOfGame();
-                    goToOwnRoom();
-                    userDAO.updateToPlaying(this.user.getID());
-                }
-                //Xử lý khi không đồng ý thách đấu
-                if(messageSplit[0].equals("disagree-duel")){
-                    Server.serverThreadBus.sendMessageToUserID(Integer.parseInt(messageSplit[1]),message);
-                }
+              
                 //Xử lý khi người chơi đánh 1 nước
                 if(messageSplit[0].equals("caro")){
                     room.getCompetitor(clientNumber).write(message);
@@ -345,7 +302,6 @@ public class ServerThread implements Runnable {
 
         }
     }
-
     public void write(String message) throws IOException {
         os.write(message);
         os.newLine();
