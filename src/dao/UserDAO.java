@@ -1,6 +1,4 @@
-
 package dao;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,7 +18,6 @@ public class UserDAO extends DAO{
     public UserDAO() {
         super();
     }
-    
     public User verifyUser(User user) {
         try {
             PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT *\n"
@@ -29,7 +26,6 @@ public class UserDAO extends DAO{
                     + "AND T_Pass = ?");
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getPassword());
-            System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
                 return new User(rs.getInt(1),
@@ -46,7 +42,6 @@ public class UserDAO extends DAO{
             }
             
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
@@ -56,7 +51,6 @@ public class UserDAO extends DAO{
             PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT * FROM ta_lpn_user\n"
                     + "WHERE I_ID=?");
             preparedStatement.setInt(1, ID);
-            System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
                 return new User(rs.getInt(1),
@@ -69,12 +63,10 @@ public class UserDAO extends DAO{
                         rs.getInt(8),
                         (rs.getInt(9) != 0),
                         (rs.getInt(10) != 0),
-                        getRank(rs.getInt(1)));
-                        
+                        getRank(rs.getInt(1)));        
             }
             
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
@@ -86,8 +78,6 @@ public class UserDAO extends DAO{
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getPassword());
             preparedStatement.setString(3, user.getNickname());
-          
-            System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -98,15 +88,13 @@ public class UserDAO extends DAO{
         try {
             PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT * FROM ta_lpn_user WHERE T_UserName = ?");
             preparedStatement.setString(1, username);
-            System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
                 return true;
             }
             
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+                     e.printStackTrace();
         }
         return false;
     }
@@ -115,14 +103,11 @@ public class UserDAO extends DAO{
         try {
             PreparedStatement preparedStatement = DAO.getJDBCConnection().prepareStatement("SELECT * FROM ta_lpn_banned_user WHERE I_ID_User = ?");
             preparedStatement.setInt(1, user.getID());
-            System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
                 return true;
-            }
-            
+            }            
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return false;
@@ -133,9 +118,7 @@ public class UserDAO extends DAO{
             PreparedStatement preparedStatement1 = DAO.getJDBCConnection().prepareStatement("SELECT * FROM `ta_lpn_banned_user` WHERE `I_ID_User` = ?");
             preparedStatement1.setInt(1, user.getID());
             ResultSet resultSet = preparedStatement1.executeQuery();
-
             if (resultSet.next() && ban) {
-                // User đã bị cấm trước đó, không cần chèn lại
                 JOptionPane.showMessageDialog(null, "User đã bị cấm trước đó");
             } else {
                 if (ban) {
@@ -148,17 +131,14 @@ public class UserDAO extends DAO{
                 	    preparedStatement.setInt(1, user.getID());
                 	    preparedStatement.executeUpdate();
                 	    preparedStatement.close();
-
+                	    
                 	    preparedStatement2.setInt(1, user.getID());
                 	    preparedStatement2.executeUpdate();
                 	    preparedStatement2.close();
                 	    
                 	} catch (SQLException e) {
-                	    // Xử lý ngoại lệ (exception) nếu cần thiết
                 	    e.printStackTrace();
                 	}
-
-               
                 } else {
                     PreparedStatement preparedStatement4 = DAO.getJDBCConnection().prepareStatement("DELETE FROM `ta_lpn_banned_user` WHERE `I_ID_User` = ?");
                     preparedStatement4.setInt(1, user.getID());
@@ -166,7 +146,6 @@ public class UserDAO extends DAO{
                     preparedStatement4.close();
                 }
             }
-
             preparedStatement1.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -178,7 +157,6 @@ public class UserDAO extends DAO{
                     + "SET IsOnline = 1\n"
                     + "WHERE I_ID = ?");
             preparedStatement.setInt(1, ID);
-            System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -191,7 +169,6 @@ public class UserDAO extends DAO{
                     + "SET IsOnline = 0\n"
                     + "WHERE I_ID = ?");
             preparedStatement.setInt(1, ID);
-            System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -219,7 +196,6 @@ public class UserDAO extends DAO{
                     + "SET IsPlaying = 1\n"
                     + "WHERE I_ID = ?");
             preparedStatement.setInt(1, ID);
-            System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -232,7 +208,6 @@ public class UserDAO extends DAO{
                     + "SET IsPlaying = 0\n"
                     + "WHERE I_ID = ?");
             preparedStatement.setInt(1, ID);
-            System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -252,7 +227,6 @@ public class UserDAO extends DAO{
             }
             
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return -1;
@@ -264,7 +238,6 @@ public class UserDAO extends DAO{
                     + "FROM ta_lpn_user\n"
                     + "ORDER BY(NumberOfGame+numberOfDraw*5+NumberOfWin*10) DESC\n"
                     + "LIMIT 8");
-            System.out.println(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 list.add(new User(rs.getInt(1),
@@ -281,7 +254,6 @@ public class UserDAO extends DAO{
             }
             
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return list;
@@ -297,7 +269,6 @@ public class UserDAO extends DAO{
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return -1;
@@ -313,7 +284,6 @@ public class UserDAO extends DAO{
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return -1;
@@ -340,7 +310,6 @@ public class UserDAO extends DAO{
                     + "WHERE I_ID = ?");
             preparedStatement.setInt(1, new UserDAO().getNumberOfWin(ID)+1);
             preparedStatement.setInt(2, ID);
-            System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -358,7 +327,6 @@ public class UserDAO extends DAO{
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return -1;
@@ -384,7 +352,6 @@ public class UserDAO extends DAO{
                     + "WHERE I_ID = ?");
             preparedStatement.setInt(1, new UserDAO().getNumberOfGame(ID) - 1);
             preparedStatement.setInt(2, ID);
-            System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -402,10 +369,8 @@ public class UserDAO extends DAO{
                 return rs.getString(1);
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
     }
-    
 }

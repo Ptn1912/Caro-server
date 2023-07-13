@@ -88,31 +88,17 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         table_1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // Get the selected row index
                 int selectedRow = table_1.getSelectedRow();
-
-                // Display a confirmation dialog
                 int option = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa hàng này không?",
                         "Confirm Deletion", JOptionPane.YES_NO_OPTION);
-
-                // If the user confirms the deletion, proceed with deleting the row
                 if (option == JOptionPane.YES_OPTION) {
-                    // Get the ID of the selected record
                     String selectedId = table_1.getValueAt(selectedRow, 0).toString();
-
-                    // Delete the record from the database
                     deleteRecord(selectedId);
-
-                    // Remove the selected row from the table
                     tableModel.removeRow(selectedRow);
                 }
             }
         });
-
-        scrollPane.setViewportView(table_1);
-       
-
-        
+        scrollPane.setViewportView(table_1);             
         txtNhpId = new JTextField();
         txtNhpId.setBounds(72, 305, 198, 46);
         txtNhpId.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -148,7 +134,7 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         getContentPane().add(btnNewButton_1);
         
         comboBox = new JComboBox<String>();
-        comboBox.setBounds(136, 393, 236, 46);
+        comboBox.setBounds(121, 393, 280, 46);
         comboBox.setFont(new Font("Tahoma", Font.PLAIN, 16));
         comboBox.setModel(new DefaultComboBoxModel<String>(new String[] { "Chọn lý do", "Ngôn ngữ thô tục - xúc phạm người khác", "Spam đăng nhập", "Sử dụng game với mục đích xấu", "Phát hiện rò rỉ bảo mật - tài khoản tạm thời bị khoá để kiểm tra thêm" }));
         getContentPane().add(comboBox);
@@ -235,13 +221,11 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         try {
             Connection conn = DAO.getJDBCConnection();
             
-            // Xóa các hàng con trong bảng ta_lpn_banned_user liên kết với hàng cha trong bảng ta_lpn_user
             String deleteChildQuery = "DELETE FROM ta_lpn_banned_user WHERE I_ID_User=?";
             PreparedStatement deleteChildStatement = conn.prepareStatement(deleteChildQuery);
             deleteChildStatement.setString(1, id);
             deleteChildStatement.executeUpdate();
-            
-            // Xóa hàng cha trong bảng ta_lpn_user
+           
             String deleteParentQuery = "DELETE FROM ta_lpn_user WHERE I_ID=?";
             PreparedStatement deleteParentStatement = conn.prepareStatement(deleteParentQuery);
             deleteParentStatement.setString(1, id);
@@ -253,7 +237,7 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         }
     }
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {
         try {
             if(txtNhpId.getText().length()==0){
                 JOptionPane.showMessageDialog(rootPane, "Vui lòng nhập ID của User");
@@ -281,7 +265,7 @@ public class Admin extends javax.swing.JFrame implements Runnable{
                     }
                     serverThread.setRoom(null);
                 }
-                Server.admin.addMessage("User có ID "+ userId+" đã bị BAN");
+           
                 Server.serverThreadBus.boardCast(-1, "chat-server,"+"User có ID "+ userId+" đã bị BAN");
             }
             userDAO.updateBannedStatus(user, true);
@@ -289,7 +273,7 @@ public class Admin extends javax.swing.JFrame implements Runnable{
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }
    
     public void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
     	try {
@@ -303,28 +287,19 @@ public class Admin extends javax.swing.JFrame implements Runnable{
             userDAO.updateBannedStatus(user, false); 
             JOptionPane.showMessageDialog(rootPane, "Đã UNBAN user "+userId);
         } catch (Exception e) {
-            e.printStackTrace();
-            
+            e.printStackTrace();            
         }
     }
-    
-    public void addMessage(String message) {
-       
-    }
-	private DefaultTableModel tableModel ;
   
+	private DefaultTableModel tableModel ;
 	private javax.swing.JButton jButton2;
     private javax.swing.JLabel lblNewLabel_1;
     private javax.swing.JPanel panel;
     private javax.swing.JScrollPane scrollPane;
     private JComboBox<String> comboBox;
-
-    private JPanel getContentPane;
-    
+    private JPanel getContentPane;   
     private JTable table_1;
     private JTextField txtNhpId;
-   
-
     @Override
     public void run() {
         setVisible(true);

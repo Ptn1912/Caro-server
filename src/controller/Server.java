@@ -31,11 +31,11 @@ public class Server {
             System.exit(1);
         }
         ThreadPoolExecutor executor = new ThreadPoolExecutor(
-                10, // corePoolSize
-                100, // maximumPoolSize
-                10, // thread timeout
+                10, 
+                100, 
+                10, 
                 TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(8) // queueCapacity
+                new ArrayBlockingQueue<>(8) 
         );
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

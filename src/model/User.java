@@ -1,7 +1,4 @@
-
 package model;
-
-
 public class User {
     private int ID;
     private String username;
@@ -121,8 +118,7 @@ public class User {
     public boolean getIsPlaying() {
         return isPlaying;
     }
-
-
+    
     public void setUsername(String username) {
         this.username = username;
     }

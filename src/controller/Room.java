@@ -1,4 +1,3 @@
-
 package controller;
 
 import dao.UserDAO;
@@ -32,8 +31,7 @@ public class Room {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    
+  
     public Room(ServerThread user1) {
         System.out.println("Tạo phòng thành công, ID là: "+Server.ID_room);
         this.password=" ";
@@ -97,7 +95,5 @@ public class Room {
     public void decreaseNumberOfGame(){
         userDAO.decreaseGame(user1.getUser().getID());
         userDAO.decreaseGame(user2.getUser().getID());
-    }
-    
-    
+    }  
 }
